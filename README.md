@@ -90,33 +90,46 @@ O sistema irá exibir uma tabela com as seguintes informações para cada client
 
 ## Problema Proposto
 
-- Tecnologia: Pyspark
- * Simular os resultados em dataframes e apresentar o resultado.
- Objetivo: Apresentar o saldo atualizado da conta corrente de todos os clientes separados por data onde seja possível reprocessar/identificar as alterações de saldos entre os dias.
-- Ex:
+**Tecnologia:** PySpark  
+**Objetivo:** Apresentar o saldo atualizado da conta corrente de todos os clientes, separados por data, com possibilidade de reprocessamento e rastreabilidade de alterações de saldo entre os dias.
 
-- Dia 02/04/2022:
- * Cliente 01 - Saldo Inicial 100,00 (01/04/2022) + Movimentação do dia 02/04/2022 - 50,00 saldo final do dia 02/04/2022 50,00
-          Saldo final do cliente no dia 02/04/2022 = 50,00
+### Exemplo
 
-- Dia 03/04/2022:
- * Cliente 01 - Saldo Inicial 50,00 (Saldo calculado no final do dia 02/04/2022) + Movimentações (03/04/2022) 50,00 + (02/04/2022) + 50,00 (estorno ao cliente)
-         Saldo final do dia 02/04/2022 = 100,00
-         Saldo final do dia 03/04/2022 = 150,00
+#### Dia 02/04/2022:
+- **Cliente 01**  
+  - Saldo Inicial: R$ 100,00 (01/04/2022)  
+  - Movimentação do dia 02/04/2022: - R$ 50,00  
+  - **Saldo Final do dia 02/04/2022:** R$ 50,00
 
-* Os movimentos de estorno ou adição de saldos sempre acontecerão em datas posteriores as processadas, por exemplo,
-      o estorno de 50,00 do dia 02/04/2022 veio no arquivo de movimentos do dia 03/04/2022 e por esse motivo se faz necessário o
- reprocessamento do saldo do dia 02/04/2022.
- 
-* À partir do cálculo do saldo inicial do cliente o mesmo deve aparecer para todas as próximas datas, caso não ocorra movimentação manter o saldo do dia anterior.
-* À partir do momento que apareçam novos clientes nos arquivos de movimentação, deve-se manter o saldo do cliente mesmo não havendo mais movimentação nos dias posteriores.
+#### Dia 03/04/2022:
+- **Cliente 01**  
+  - Saldo Inicial: R$ 50,00 (calculado no final do dia 02/04/2022)  
+  - Movimentações:
+    - 03/04/2022: + R$ 50,00  
+    - 02/04/2022 (estorno): + R$ 50,00  
+  - **Saldo Final do dia 02/04/2022 (reprocessado):** R$ 100,00  
+  - **Saldo Final do dia 03/04/2022:** R$ 150,00
 
-- Resultado final:
- * Tabela contendo o saldo atualizado de todos os clientes por data, onde seja possível ter uma rastreabilidade entre um dia e outro.
-Ex:
-- 02/04/2022:
-      02/04/2022: Cliente 01 - 50,00 (Saldo Final)
+### Regras de Processamento
 
-- 03/04/2022:
-      02/04/2022 Cliente 01 - 100,00 (Saldo Final)
-      03/04/2022 Cliente 01 - 150,00 (Saldo Final)
+- Movimentos de estorno ou adição de saldo podem ocorrer em **datas posteriores** às processadas.
+  - Exemplo: Estorno de R$ 50,00 referente ao dia 02/04/2022 pode aparecer apenas no arquivo do dia 03/04/2022, exigindo o reprocessamento do saldo do dia 02/04.
+
+- A partir do cálculo do saldo inicial de um cliente, **o cliente deve aparecer em todas as próximas datas**.
+  - Se não houver movimentação, o saldo do dia anterior deve ser mantido.
+
+- Novos clientes identificados nas movimentações devem ser **mantidos nos dias seguintes**, mesmo que não tenham novas movimentações.
+
+### Resultado Esperado
+
+Uma tabela contendo os saldos atualizados por cliente e por data, permitindo rastreabilidade entre os dias.
+
+#### Exemplo de Saída
+
+```plaintext
+02/04/2022:
+  - Cliente 01: R$ 50,00 (Saldo Final)
+
+03/04/2022:
+  - Cliente 01 (02/04/2022 reprocessado): R$ 100,00
+  - Cliente 01 (03/04/2022): R$ 150,00
