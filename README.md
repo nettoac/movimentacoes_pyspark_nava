@@ -90,12 +90,33 @@ O sistema irá exibir uma tabela com as seguintes informações para cada client
 
 ## Problema Proposto
 
-O sistema foi desenvolvido para resolver o seguinte cenário de processamento de saldos bancários:
+- Tecnologia: Pyspark
+ * Simular os resultados em dataframes e apresentar o resultado.
+ Objetivo: Apresentar o saldo atualizado da conta corrente de todos os clientes separados por data onde seja possível reprocessar/identificar as alterações de saldos entre os dias.
+- Ex:
 
-Dia 02/04/2022:
-- Cliente 01 - Saldo Inicial 100,00 (01/04/2022) + Movimentação do dia 02/04/2022 - 50,00
-- Cliente 02 - Saldo Inicial 200,00 (01/04/2022) + Movimentação do dia 02/04/2022 + 100,00
+- Dia 02/04/2022:
+ * Cliente 01 - Saldo Inicial 100,00 (01/04/2022) + Movimentação do dia 02/04/2022 - 50,00 saldo final do dia 02/04/2022 50,00
+          Saldo final do cliente no dia 02/04/2022 = 50,00
 
-Dia 03/04/2022:
-- Cliente 01 - Estorno da movimentação do dia 02/04/2022 + 50,00 + Movimentação do dia 03/04/2022 + 100,00
-- Cliente 02 - Movimentação do dia 03/04/2022 - 50,00
+- Dia 03/04/2022:
+ * Cliente 01 - Saldo Inicial 50,00 (Saldo calculado no final do dia 02/04/2022) + Movimentações (03/04/2022) 50,00 + (02/04/2022) + 50,00 (estorno ao cliente)
+         Saldo final do dia 02/04/2022 = 100,00
+         Saldo final do dia 03/04/2022 = 150,00
+
+* Os movimentos de estorno ou adição de saldos sempre acontecerão em datas posteriores as processadas, por exemplo,
+      o estorno de 50,00 do dia 02/04/2022 veio no arquivo de movimentos do dia 03/04/2022 e por esse motivo se faz necessário o
+ reprocessamento do saldo do dia 02/04/2022.
+ 
+* À partir do cálculo do saldo inicial do cliente o mesmo deve aparecer para todas as próximas datas, caso não ocorra movimentação manter o saldo do dia anterior.
+* À partir do momento que apareçam novos clientes nos arquivos de movimentação, deve-se manter o saldo do cliente mesmo não havendo mais movimentação nos dias posteriores.
+
+- Resultado final:
+ * Tabela contendo o saldo atualizado de todos os clientes por data, onde seja possível ter uma rastreabilidade entre um dia e outro.
+Ex:
+- 02/04/2022:
+      02/04/2022: Cliente 01 - 50,00 (Saldo Final)
+
+- 03/04/2022:
+      02/04/2022 Cliente 01 - 100,00 (Saldo Final)
+      03/04/2022 Cliente 01 - 150,00 (Saldo Final)
